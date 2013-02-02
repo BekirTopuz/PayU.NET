@@ -1,0 +1,18 @@
+c:\users\bilgehan\documents\visual studio 2010\Projects\PayU\PayU\bin\PayU.dll
+c:\users\bilgehan\documents\visual studio 2010\Projects\PayU\PayU\bin\PayU.pdb
+c:\users\bilgehan\documents\visual studio 2010\Projects\PayU\PayU\obj\Debug\PayU.dll
+c:\users\bilgehan\documents\visual studio 2010\Projects\PayU\PayU\obj\Debug\PayU.pdb
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayU\bin\PayUOperation.dll
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayU\bin\PayUOperation.pdb
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayU\obj\Debug\PayU.csprojResolveAssemblyReference.cache
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayU\bin\Newtonsoft.Json.dll
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayU\bin\Newtonsoft.Json.xml
+C:\Projects\PayU\PayU\bin\PayU.dll
+C:\Projects\PayU\PayU\bin\PayU.pdb
+C:\Projects\PayU\PayU\bin\Newtonsoft.Json.dll
+C:\Projects\PayU\PayU\bin\PayUOperation.dll
+C:\Projects\PayU\PayU\bin\PayUOperation.pdb
+C:\Projects\PayU\PayU\bin\Newtonsoft.Json.xml
+C:\Projects\PayU\PayU\obj\Debug\PayU.csprojResolveAssemblyReference.cache
+C:\Projects\PayU\PayU\obj\Debug\PayU.dll
+C:\Projects\PayU\PayU\obj\Debug\PayU.pdb

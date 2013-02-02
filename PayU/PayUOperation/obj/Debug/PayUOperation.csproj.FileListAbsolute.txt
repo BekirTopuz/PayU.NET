@@ -1,0 +1,8 @@
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayUOperation\bin\Debug\PayUOperation.dll
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayUOperation\bin\Debug\PayUOperation.pdb
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayUOperation\obj\Debug\PayUOperation.dll
+C:\Users\Bilgehan\Documents\Visual Studio 2010\Projects\PayU\PayUOperation\obj\Debug\PayUOperation.pdb
+C:\Projects\PayU\PayUOperation\obj\Debug\PayUOperation.dll
+C:\Projects\PayU\PayUOperation\obj\Debug\PayUOperation.pdb
+C:\Projects\PayU\PayUOperation\bin\Debug\PayUOperation.dll
+C:\Projects\PayU\PayUOperation\bin\Debug\PayUOperation.pdb

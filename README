@@ -1,0 +1,283 @@
+OpenPayU JS+API Credit Card Payment Protocol v2.0 (https://secure.payu.com.tr/openpayu/docs/)
+
+Introduction:
+
+This protocol is intended for merchant who want to integrate credit card payment functionality on their pages without redirect. This approach allows merchants full control over their user experience as opposed to redirect approach in which the user follows several redirects to third parties and back again. 
+The protocol consists of 2 components:1.JavaScript files who handle communication between browser and PayU server or Merchant server (using AJAX requests). This part is also responsible for rendering the credit card information form.
+2.Server side script who handle communication between Merchant Server and PayU Server (XML based server to server communication)
+This approach covers most of the merchant problems:?Easy to integrate
+?Allow custom page design
+?Solves the security problems
+
+How the System Works: General Description
+
+The process requires the Merchant to include OpenPayU JavaScript files from PayU Server in his shopping cart checkout page.
+
+The entire flow is depicted in the following diagram.
+ 
+When the shopper finally decides to pay for the products (when he clicks the “Pay” button), the included JS functionality will perform an AJAX (step 1) request to Merchant server side script (orderCreateRequestUrl) which saves a new order in the Merchant system. 
+
+Merchant system sends the data collected by the shop ((step 2)) to PayU server using an the OpenPayU OrderCreateRequest method (XML document sent via HTTP POST from server to server).
+
+PayU Server returns an OrderCreateResponse (XML document) to Merchant’s backend ((step 3)).
+
+Merchant backend forwards OrderCreateResponse to OpenPayU.js through client’s browser (4). 
+
+Browser sends a request to PayU Server with credit card details and OrderID (received in the previous step) to authorize specified transaction (5). 
+
+Transaction processing response is sent by PayU server to client’s browser (6), so the merchant can handle response (in a callback function).
+
+2. Description of Using JavaScript Payment Plugin 
+
+Step 1: Include OpenPayU JavaSript files:
+
+ 
+<script src="https://secure.payu.com.tr/openpayu/v2/client/openpayu-2.0.js"></script>
+<script src="https://secure.payu.com.tr/openpayu/v2/client/plugin-payment-2.0.js"></script>
+<script src="https://secure.payu.com.tr/openpayu/v2/client/plugin-installment-2.0.js"></script>
+ 
+
+Step 2: Render in HTML page divs with the following id’s:
+
+Placeholder Description 
+
+payu-card-cardholder-placeholder Placeholder for the card holder name input element. 
+payu-card-number-placeholder Placeholder for the credit card number input element. 
+payu-card-cvv-placeholder Placeholder for the CVV input element. 
+Additionaly, the Merchants page should contain the following HTML elements:
+Required fields (IDs) Description 
+
+payu-card-expm Input or select element required to collect the card expiration month of the shopper. 
+payu-card-expy Input or select element required to collect the card expiration year of the shopper. 
+payu-card-installment Form element required to collect the number of installments (if available). 
+
+Note: The merchant can style the form elements using regular CSS classes or inline style attribute. 
+ Also events attached to form elements are supported (click, dblclick, keydown, keypress, keyup, blur, focus). 
+
+Step 3: Handle payment process
+
+All that the merchant is required to do in order to start a payment process is to setup the OpenPayU.Payment plugin and specify a callback function to handle payment authorization response.
+JavaScript sample code:
+
+ 
+OpenPayU.Payment.setup({
+//  merchant code in PayU system (MANDATORY)
+id_account: "OPU_DEMO",     
+ 
+// Merchant server backend script used to communicate with PayU server (MANDATORY)
+orderCreateRequestUrl:"https://www.merchant-shop.com/order_create_request.php" 
+});
+ 
+ 
+$('#payu-cc-form-submit').click(function() {
+         
+    OpenPayU.Payment.create({
+ 
+// merchant can send to his server side script other additional data from page.  (OPTIONAL)
+        orderCreateRequestData: {FirstName : "John", LastName : "Doe",  Amount : 123.45, Currency : "EUR"}
+    }, 
+ 
+//callback function which will be used to handle the authorization response from PayU server.  (MANDATORY)
+    function(response) {
+        if (response.Status.StatusCode == 'OPENPAYU_SUCCESS') {
+            // handle ok response
+        } else {
+            // handle error response
+        }
+        return false;
+    });
+    return false;
+});
+ 
+Server response object is received in JSON format and has the following structure:
+
+
+OK RESPONSE:
+{
+    OrderId : 271822,
+    ExtOrderId : "ExtOrderId0",
+    MerchantPosId : "OPU_DEMO",
+    Amount : 50,
+    Currency : "TRY",
+    InstalmentsNo :"",
+    ProgramName : "",
+    Status : {
+        StatusCode : "OPENPAYU_SUCCESS",
+        Code : "0",
+        CodeLiteral : "SUCCESS",
+        Location : "PaymentBegin"
+    }
+}
+ 
+ERROR RESPONSE WITH STATUS OPENPAYU_ERROR_VALUE_INVALID:
+ 
+{
+    OrderId : 19790,
+    ExtOrderId : "ExtOrderId0",
+    MerchantPosId : "OPU_DEMO",
+    Status : {
+        StatusCode : OPENPAYU_ERROR_VALUE_INVALID,
+        Code : 10720,
+        CodeLiteral : TRANSACTION_INVALID_PARAMS,
+        Location : PaymentBegin,
+        StatusDesc : ["INVALID_CARD_NO","INVALID_CARD_CVV","INVALID_CARD_NAME"]
+    }
+}
+ 
+ 
+ERROR RESPONSE WITH STATUS OPENPAYU_SIGNATURE_INVALID:
+ 
+{
+    ResId : ,
+    MerchantPosId : ,
+    ExtOrderId : ,
+    OrderId : ,
+    Status: {
+        StatusCode : "OPENPAYU_SIGNATURE_INVALID",
+        Code : 10900,
+        CodeLiteral : "SIGNATURE_INVALID",
+        Location : "OrderCreate"
+    }
+}
+ 
+
+Note: A complete list of Status info can be found here. 
+
+Step 4: How to create a OrderCreateRequest 
+
+The OrderCreateRequest call is performed from the Merchants server side (OrderCreateRequestUrl - specified in JavaScript setup) and consists in sending an HTTP POST request with an specific XML document.
+This is a complete sample of OrderCreateRequest XML document:
+
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenPayU xmlns="http://www.openpayu.com/openpayu.xsd">
+    <OrderCreateRequest>
+        <ReqId>b87f798c-a3fd-4dd3-aae1-6df3b45299f9</ReqId>
+        <CustomerIp>127.0.0.1</CustomerIp>
+        <ExtOrderId>ExtOrderId0</ExtOrderId>
+        <MerchantPosId>OPU_DEMO</MerchantPosId>
+        <Description>Description0</Description>
+        <CurrencyCode>TRY</CurrencyCode>
+        <TotalAmount>555</TotalAmount>
+        <Buyer>
+            <FirstName>FirstName</FirstName>
+            <LastName>LastName</LastName>
+            <CountryCode>tr</CountryCode>
+            <Email>c34@xc.ro</Email>
+            <PhoneNumber>PhoneNumber</PhoneNumber>
+            <Language>en</Language>
+        </Buyer>
+        <Products>
+            <Product>
+                <Name>Name0</Name>
+                <UnitPrice>20</UnitPrice>
+                <Quantity>2</Quantity>
+            </Product>
+            <Product>
+                <Name>Name1</Name>
+                <UnitPrice>10</UnitPrice>
+                <Quantity>1</Quantity>
+            </Product>
+        </Products>
+        <PayMethod>DEFAULT</PayMethod>
+    </OrderCreateRequest>
+</OpenPayU>
+        
+ 
+ReqId - this field should contain an unique identifier of the request. This will be used in all subsequent calls between PayU and Merchant's system.
+MerchantPosId – merchant code in PayU system
+PayMethod – must be set to DEFAULT
+
+XML must be sent in the "DOCUMENT" post variable to https://secure.payu.com.tr/openpayu/v2/order.xml
+For security reason, each HTTP request must carry a signature. Signature is performed on the entire XML document concatenated with a common Secret Key using a SHA256 algorithm and it is attached as a special HTTP Header. 
+OpenPayu-Signature: sender={merchantCode};signature={signature};algorithm=SHA256;content=DOCUMENT
+
+Mercant will receive OrderCreateResponse which must be converted to JSON and outputed to browser to continue the authorization process.
+
+
+
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<OrderCreateResponse>
+    <ResId>26d02b6c-3d57-430c-a044-a70ea54afa88</ResId>
+    <MerchantPosId>OPU_DEMO</MerchantPosId>
+    <ExtOrderId>ExtOrderId0</ExtOrderId>
+    <OrderId>353537</OrderId>
+    <Status>
+        <StatusCode>OPENPAYU_SUCCESS</StatusCode>
+        <Code>0</Code>
+        <CodeLiteral>SUCCESS</CodeLiteral>
+        <Location>OrderCreate</Location>
+    </Status>
+</OrderCreateResponse>
+ 
+ 
+        
+ 
+An example of invalid response:
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<OrderCreateResponse>
+    <ResId></ResId>
+    <MerchantPosId></MerchantPosId>
+    <ExtOrderId></ExtOrderId>
+    <OrderId></OrderId>
+    <Status>
+        <StatusCode>OPENPAYU_ERROR_VALUE_INVALID</StatusCode>
+        <Code>10801</Code>
+        <CodeLiteral>ORDER_BUYER_INVALID</CodeLiteral>
+        <Location>OrderCreate</Location>
+    </Status>
+</OrderCreateResponse>
+ 
+        
+ 
+
+Note: A complete list for Status info can be found here. 
+PHP example:https://secure.payu.com.tr/openpayu/v2/client/demo/installment.zip 
+3D-Secure :
+In case that the card of the Shopper is enrolled in 3D-Secure system, an inline popup window will be displayed and redirected to the issuer bank. After the authentication process ends, the page of the Merchant will receive the authorization result in the same way as for non 3D-Secure enrolled cards. The Merchant can customize the inline popup to match his website layout. Of course, the content of the bank's page is not available for customization. 
+Status Description
+
+Each response message in OpenPayU protocol contains a Status node with the following structure: StatusCode, CodeLiteral, Code, Location, StatusDesc.
+Complete list of Status possible values are:
+StatusCode CodeLiteral Code Location StatusDesc Comment 
+
+OPENPAYU_SUCCESS SUCCESS 0 Any Location - Action finish successfully. Depend of locatation aditional information will be receive. 
+OPENPAYU_SIGNATURE_INVALID SIGNATURE_INVALID 10900 Order - Merchant send wrong OpenPayu-Signature in header 
+OPENPAYU_ERROR_UNKNOWN_MERCHANT_POS UNKNOWN_MERCHANT 10910 Order - Merchant not found in PayU system 
+OPENPAYU_ERROR_INTERNAL DATA_NOT_FOUND 10920 Order - Xml DOCUMENT not found or empty 
+OPENPAYU_SIGNATURE_INVALID SIGNATURE_INVALID 10901 Order - Invalid algoritm for signature. 
+OPENPAYU_SIGNATURE_INVALID SIGNATURE_INVALID 10902 Order - Signature not confirmed. 
+OPENPAYU_SIGNATURE_INVALID ORDER_BUYER_INVALID 10801 Order - Buyer node in OrderCreateRequest is invalid or missing. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_BUYER_INVALID_EMAIL 10802 Order - Buyer email is invalid or missing. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_BUYER_INVALID_FIRST_NAME 10803 Order - Buyer first name is invalid or missing. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_BUYER_INVALID_LAST_NAME 10804 Order - Buyer lat name is invalid or missing. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_CURRENCY 10805 Order - Invalid currency (allowed options: TRY). 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_AMOUNT 10806 Order - Invalid amount 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_INVOICE 10850 Order - Invalid invoice information in OrderCreateRequest. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_DELIVERY 10870 Order - Invalid delivery information in OrderCreateRequest. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_PRODUCTS 10820 Order - Invalid products information in OrderCreateRequest. 
+OPENPAYU_ERROR_VALUE_MISSING ORDER_MISSING_PRODUCTS 10821 Order - Missing products information in OrderCreateRequest. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID_PRODUCT 10830 Order - A product has invalid information in OrderCreateRequest. 
+OPENPAYU_ERROR_VALUE_INVALID ORDER_INVALID 10703 Payment or InstallmentPayment - Error load order. 
+OPENPAYU_ERROR_VALUE_INVALID INVALID_ORDER_ID 10704 Payment or InstallmentPayment - Error load order. 
+OPENPAYU_ERROR_VALUE_INVALID INVALID_PAY_METHOD 10701 Payment or InstallmentPayment - Not credit card payment method. 
+OPENPAYU_ERROR_VALUE_INVALID INVALID_PAY_METHOD 10702 Payment or InstallmentPayment - Merchant don't support this payment method. 
+OPENPAYU_ERROR_INTERNAL TRANSACTION_PROCESSING_PROBLEMS 10710 Payment or InstallmentPayment - Could not load merchant gateway. 
+OPENPAYU_ERROR_VALUE_INVALID TRANSACTION_INVALID_PARAMS 10720 Payment or InstallmentPayment Array with some of 
+following elements: "INVALID_CARD_NO",
+ "INVALID_CARD_NAME",
+ "INVALID_CARD_YEAR",
+ "INVALID_CARD_MONTH",
+ "INVALID_CARD_CVV" Some card field are incorect or missing. Error list are receive in StatusDesc field as array.  
+OPENPAYU_ERROR_INTERNAL TRANSACTION_GENERAL_ERROR 10500 to 10599 Payment or InstallmentPayment - Authorization failed by some internal reason.  
+OPENPAYU_ERROR_INTERNAL GATEWAY_ERROR Code from gateway Payment or InstallmentPayment Error code description Authorization declined.  
+OPENPAYU_ERROR_INTERNAL INVALID_MESSAGE 10751 Payment or InstallmentPayment - Invalid response receive from bank.  
+OPENPAYU_ERROR_INTERNAL ALREADY_AUTHORIZED 10752 Payment or InstallmentPayment - Order is allready authorize. 
+OPENPAYU_WARNING_CONTINUE_3DS OPENPAYU_WARNING_CONTINUE_3DS 3 Payment or InstallmentPayment - Payment will continue in 3DSecure. Process is handle automatically by OpenPayU 
+OPENPAYU_ERROR_VALUE_INVALID UNSUPPORTED_INSTALLMENT_NUMBER 10101,10201 InstallmentPayment - This order can't be paid with this number of installments. Buyer can try to pay in one time with this card.  
+OPENPAYU_ERROR_VALUE_INVALID NOT_CREDIT_CARD 10102,10202 InstallmentPayment - Card used for this payment is not a credit card.
+ Buyer can try to pay in one time with this card.  
+OPENPAYU_ERROR_VALUE_INVALID UNSUPPORTED_LOYALTY_PROGRAM 10103,10203 InstallmentPayment - Card is enrolled in a loyalty program unsupported by this order or merchant. Buyer can try to pay in one time with this card.  

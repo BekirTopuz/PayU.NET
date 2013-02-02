@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayU", "PayU\PayU.csproj", "{E069FAF9-1DCB-416B-8061-13308E2CF433}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayUOperation", "PayUOperation\PayUOperation.csproj", "{4478F103-E64E-4A1D-8E43-EEDAB278D039}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E069FAF9-1DCB-416B-8061-13308E2CF433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E069FAF9-1DCB-416B-8061-13308E2CF433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E069FAF9-1DCB-416B-8061-13308E2CF433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E069FAF9-1DCB-416B-8061-13308E2CF433}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4478F103-E64E-4A1D-8E43-EEDAB278D039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4478F103-E64E-4A1D-8E43-EEDAB278D039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4478F103-E64E-4A1D-8E43-EEDAB278D039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4478F103-E64E-4A1D-8E43-EEDAB278D039}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
